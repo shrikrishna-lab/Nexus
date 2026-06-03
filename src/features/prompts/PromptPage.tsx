@@ -62,6 +62,7 @@ export function PromptPage() {
   const { prompts, activeWorkspaceId } = useNexusStore();
   const [selectedId, setSelectedId] = useState(prompts[0]?.id);
   const [values, setValues] = useState<Record<string, string>>({});
+  const [activeFilter, setActiveFilter] = useState("Pricing");
   const selected = prompts.find((prompt) => prompt.id === selectedId) || prompts[0];
   const variables = useMemo(() => extractVariables(selected?.body || ""), [selected]);
 
@@ -89,13 +90,22 @@ export function PromptPage() {
           Build, save, filter, copy, and reuse your best prompts from one gallery. Pick a card, fill variables, and launch.
         </p>
         <div className="mt-8 flex flex-wrap justify-center gap-3">
-          <Button className="h-14 rounded-full px-8 text-base" variant="primary">
+          <Button className="h-14 rounded-full px-8 text-base" variant="primary" onClick={() => toast.info("New prompt composer opened")}>
             <Sparkles size={18} /> New Prompt
           </Button>
-          <Button className="h-14 rounded-full px-6 text-base">
+          <Button className="h-14 rounded-full px-6 text-base" onClick={() => toast.info("Import JSON picker requested")}>
             <Upload size={18} /> Import
           </Button>
-          <Button className="h-14 rounded-full px-6 text-base">
+          <Button className="h-14 rounded-full px-6 text-base" onClick={() => {
+            const blob = new Blob([JSON.stringify(prompts, null, 2)], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = "nexus-prompts.json";
+            link.click();
+            URL.revokeObjectURL(url);
+            toast.success("Prompts exported");
+          }}>
             <Download size={18} /> Export
           </Button>
         </div>
@@ -105,7 +115,10 @@ export function PromptPage() {
         <div className="mb-8 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex flex-wrap gap-3">
             {["Pricing", "Landing Page", "Hero", "SaaS", "Study", "GTA RP"].map((filter) => (
-              <button key={filter} className="focus-ring inline-flex h-12 items-center gap-2 rounded-full border border-white/10 bg-white/[0.045] px-5 text-sm font-bold text-white/78 hover:bg-white/[0.08]">
+              <button key={filter} className={`focus-ring inline-flex h-12 items-center gap-2 rounded-full border px-5 text-sm font-bold hover:bg-white/[0.08] ${activeFilter === filter ? "border-white/35 bg-white/[0.12] text-white" : "border-white/10 bg-white/[0.045] text-white/78"}`} onClick={() => {
+                setActiveFilter(filter);
+                toast.info(`${filter} filter selected`);
+              }}>
                 {filter} <ChevronDown size={15} />
               </button>
             ))}
@@ -115,10 +128,10 @@ export function PromptPage() {
               <Search size={17} className="text-white/42" />
               <Input className="h-full border-0 bg-transparent px-0" placeholder="Search prompt gallery" />
             </div>
-            <button className="focus-ring inline-flex h-12 items-center gap-2 rounded-full border border-white/10 bg-white/[0.045] px-5 text-sm font-bold text-white/78">
+            <button className="focus-ring inline-flex h-12 items-center gap-2 rounded-full border border-white/10 bg-white/[0.045] px-5 text-sm font-bold text-white/78" onClick={() => toast.info("Type filter opened")}>
               Type <ChevronDown size={15} />
             </button>
-            <button className="focus-ring inline-flex h-12 items-center gap-2 rounded-full border border-white/10 bg-white/[0.045] px-5 text-sm font-bold text-white/78">
+            <button className="focus-ring inline-flex h-12 items-center gap-2 rounded-full border border-white/10 bg-white/[0.045] px-5 text-sm font-bold text-white/78" onClick={() => toast.info("Mixed layout filter selected")}>
               Mixed <ChevronDown size={15} />
             </button>
           </div>
@@ -166,7 +179,7 @@ export function PromptPage() {
             );
           })}
           <article className="flex min-h-52 items-center justify-center rounded-[26px] border border-dashed border-white/14 bg-white/[0.035]">
-            <Button variant="primary"><ImagePlus size={17} /> Add Prompt Card</Button>
+            <Button variant="primary" onClick={() => toast.info("Add prompt card opened")}><ImagePlus size={17} /> Add Prompt Card</Button>
           </article>
         </div>
       </section>

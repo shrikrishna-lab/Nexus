@@ -1,6 +1,8 @@
 import { create } from "zustand";
 import { prompts, stashItems, tasks, themes, workspaces, type Prompt, type StashItem, type Task, type Workspace } from "@/data/seed";
 
+export type ModuleId = "workspaces" | "prompts" | "progress" | "stash" | "future" | "armin" | "connect";
+
 type NexusState = {
   workspaces: Workspace[];
   prompts: Prompt[];
@@ -8,6 +10,7 @@ type NexusState = {
   tasks: Task[];
   authReady: boolean;
   profileName: string;
+  enabledModules: ModuleId[];
   activeWorkspaceId: string;
   sidebarCollapsed: boolean;
   commandOpen: boolean;
@@ -23,21 +26,43 @@ type NexusState = {
   toggleFocus: () => void;
   setTheme: (name: string) => void;
   addWorkspace: (workspace: Workspace) => void;
-  setupLocalAuth: (name: string, pin: string) => boolean;
+  updateWorkspace: (id: string, patch: Partial<Workspace>) => void;
+  deleteWorkspace: (id: string) => void;
+  toggleModule: (id: ModuleId) => void;
+  setupLocalAuth: (name: string, pin: string, enabledModules?: ModuleId[], customWorkspaces?: Workspace[]) => boolean;
   unlock: (pin: string) => boolean;
   lock: () => void;
 };
 
 const storedProfileName = localStorage.getItem("nexus.profileName") || "";
 const storedPin = localStorage.getItem("nexus.pin") || "";
+const allModules: ModuleId[] = ["workspaces", "prompts", "progress", "stash", "future", "armin", "connect"];
+
+function readJson<T>(key: string, fallback: T): T {
+  try {
+    const raw = localStorage.getItem(key);
+    return raw ? (JSON.parse(raw) as T) : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+function saveWorkspaces(next: Workspace[]) {
+  localStorage.setItem("nexus.workspaces", JSON.stringify(next));
+}
+
+function saveModules(next: ModuleId[]) {
+  localStorage.setItem("nexus.enabledModules", JSON.stringify(next));
+}
 
 export const useNexusStore = create<NexusState>((set) => ({
-  workspaces,
+  workspaces: readJson("nexus.workspaces", workspaces),
   prompts,
   stashItems,
   tasks,
   authReady: !storedPin,
   profileName: storedProfileName,
+  enabledModules: readJson("nexus.enabledModules", allModules),
   activeWorkspaceId: "study",
   sidebarCollapsed: false,
   commandOpen: false,
@@ -59,12 +84,34 @@ export const useNexusStore = create<NexusState>((set) => ({
     }
     set({ themeName: name });
   },
-  addWorkspace: (workspace) => set((state) => ({ workspaces: [...state.workspaces, workspace] })),
-  setupLocalAuth: (name, pin) => {
+  addWorkspace: (workspace) => set((state) => {
+    const next = [...state.workspaces, workspace];
+    saveWorkspaces(next);
+    return { workspaces: next, activeWorkspaceId: workspace.id };
+  }),
+  updateWorkspace: (id, patch) => set((state) => {
+    const next = state.workspaces.map((workspace) => (workspace.id === id ? { ...workspace, ...patch } : workspace));
+    saveWorkspaces(next);
+    return { workspaces: next };
+  }),
+  deleteWorkspace: (id) => set((state) => {
+    const next = state.workspaces.filter((workspace) => workspace.id !== id);
+    saveWorkspaces(next);
+    return { workspaces: next, activeWorkspaceId: next[0]?.id || "" };
+  }),
+  toggleModule: (id) => set((state) => {
+    const next = state.enabledModules.includes(id) ? state.enabledModules.filter((moduleId) => moduleId !== id) : [...state.enabledModules, id];
+    const safeNext: ModuleId[] = next.includes("workspaces") ? next : ["workspaces", ...next];
+    saveModules(safeNext);
+    return { enabledModules: safeNext };
+  }),
+  setupLocalAuth: (name, pin, enabledModules = allModules, customWorkspaces) => {
     if (pin.trim().length < 4) return false;
     localStorage.setItem("nexus.profileName", name.trim() || "Nexus User");
     localStorage.setItem("nexus.pin", pin);
-    set({ profileName: name.trim() || "Nexus User", authReady: true });
+    saveModules(enabledModules);
+    if (customWorkspaces?.length) saveWorkspaces(customWorkspaces);
+    set({ profileName: name.trim() || "Nexus User", enabledModules, workspaces: customWorkspaces?.length ? customWorkspaces : workspaces, activeWorkspaceId: (customWorkspaces?.[0] || workspaces[0]).id, authReady: true });
     return true;
   },
   unlock: (pin) => {

@@ -1,4 +1,5 @@
 import { CalendarDays, Flag, Link2, MessageSquare, Plus, Wand2 } from "lucide-react";
+import { toast } from "sonner";
 import { ModuleHeader } from "@/components/ModuleHeader";
 import { Tag } from "@/components/Tag";
 import { Button } from "@/components/ui/Button";
@@ -6,13 +7,21 @@ import { Textarea } from "@/components/ui/Input";
 import { ideas } from "@/data/seed";
 
 export function FuturePage() {
+  const mcpConfig = `{
+  "nexus": {
+    "command": "npx",
+    "args": ["@nexus/mcp"],
+    "env": { "NEXUS_DB": "./nexus.sqlite" }
+  }
+}`;
+
   return (
     <div>
       <ModuleHeader
         eyebrow="Module 5"
         title="Future Board"
         description="Ideas, tasks, web links, app concepts, MCP configs, saved chats, timeline planning, sketch pad slots, and brain-dump auto sorting."
-        actions={<Button variant="primary"><Plus size={16} /> New Future Item</Button>}
+        actions={<Button variant="primary" onClick={() => toast.info("New Future item composer opened")}><Plus size={16} /> New Future Item</Button>}
       />
       <div className="grid gap-4 xl:grid-cols-[1fr_360px]">
         <section className="grid gap-4 md:grid-cols-2">
@@ -29,21 +38,18 @@ export function FuturePage() {
           ))}
           <article className="glass rounded-lg p-4">
             <h2 className="font-bold">MCP Config</h2>
-            <pre className="mt-3 rounded-md border border-white/10 bg-black/30 p-3 font-mono text-xs text-cyan-100/80">{`{
-  "nexus": {
-    "command": "npx",
-    "args": ["@nexus/mcp"],
-    "env": { "NEXUS_DB": "./nexus.sqlite" }
-  }
-}`}</pre>
-            <Button className="mt-4 w-full"><Link2 size={16} /> Copy JSON Config</Button>
+            <pre className="mt-3 rounded-md border border-white/10 bg-black/30 p-3 font-mono text-xs text-cyan-100/80">{mcpConfig}</pre>
+            <Button className="mt-4 w-full" onClick={async () => {
+              await navigator.clipboard?.writeText(mcpConfig);
+              toast.success("MCP config copied");
+            }}><Link2 size={16} /> Copy JSON Config</Button>
           </article>
         </section>
         <aside className="space-y-4">
           <section className="glass rounded-lg p-4">
             <h2 className="mb-3 flex items-center gap-2 font-bold"><Wand2 size={17} /> Brain Dump</h2>
             <Textarea placeholder="Paste tasks, URLs, app ideas, chats, or MCP config notes. Nexus will sort them by type." />
-            <Button className="mt-3 w-full" variant="primary">Sort Into Board</Button>
+            <Button className="mt-3 w-full" variant="primary" onClick={() => toast.success("Brain dump sorted into draft cards")}>Sort Into Board</Button>
           </section>
           <section className="glass rounded-lg p-4">
             <h2 className="mb-3 flex items-center gap-2 font-bold"><CalendarDays size={17} /> Timeline</h2>

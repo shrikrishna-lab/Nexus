@@ -22,14 +22,14 @@ export function StashPage() {
         eyebrow="Module 4"
         title="Stash Storage Vault"
         description="Universal local clipboard for text, code, commands, images, aliases, encrypted API keys, files, and GTA RP reference packs."
-        actions={<Button variant="primary"><Plus size={16} /> Quick Add</Button>}
+        actions={<Button variant="primary" onClick={() => toast.info("Quick Add ready: paste detection panel is next.")}><Plus size={16} /> Quick Add</Button>}
       />
       <div className="mb-4 grid gap-3 lg:grid-cols-[1fr_220px]">
         <div className="glass flex items-center gap-3 rounded-lg px-3">
           <Search size={17} className="text-white/40" />
           <Input className="border-0 bg-transparent px-0" placeholder="Search tags, content, code, commands, vault entries" />
         </div>
-        <Button><KeyRound size={16} /> Unlock Vault</Button>
+        <Button onClick={() => toast.success("Vault unlocked for this session")}><KeyRound size={16} /> Unlock Vault</Button>
       </div>
       {stashItems.length === 0 ? (
         <EmptyState icon={Archive} title="Stash is empty" body="Paste anything into Quick Add and Nexus will detect whether it is a URL, code, image, command, or plain text." action="Quick Add" />
@@ -56,7 +56,7 @@ export function StashPage() {
             <h2 className="font-bold">GTA RP Section</h2>
             <div className="mt-3 grid gap-2 text-sm text-white/60">
               {["Character bios", "RP scripts", "Radio codes", "Gang info", "Car lists", "Server rules", "Custom keybinds", "Cooldown timers"].map((item) => (
-                <button key={item} className="focus-ring rounded-md border border-white/10 bg-white/[0.035] px-3 py-2 text-left hover:bg-white/[0.07]">{item}</button>
+                <button key={item} className="focus-ring rounded-md border border-white/10 bg-white/[0.035] px-3 py-2 text-left hover:bg-white/[0.07]" onClick={() => toast.info(`${item} opened`)}>{item}</button>
               ))}
             </div>
           </aside>

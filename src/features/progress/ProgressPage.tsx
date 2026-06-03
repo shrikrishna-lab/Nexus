@@ -1,5 +1,6 @@
 import { BarChart, Bar, Cell, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis } from "recharts";
 import { Clock, Flame, Play, Plus, Target } from "lucide-react";
+import { toast } from "sonner";
 import { ModuleHeader } from "@/components/ModuleHeader";
 import { Button } from "@/components/ui/Button";
 import { progressLogs, tasks } from "@/data/seed";
@@ -19,7 +20,7 @@ export function ProgressPage() {
         eyebrow="Module 3"
         title="Progress Tracker"
         description="Study heatmaps, project Kanban, habit streaks, time logger, goals, charts, and weekly summaries in one local dashboard."
-        actions={<Button variant="primary"><Play size={16} /> Start Timer</Button>}
+        actions={<Button variant="primary" onClick={() => toast.success("Timer started for active workspace")}><Play size={16} /> Start Timer</Button>}
       />
       <div className="grid gap-4 xl:grid-cols-4">
         {[

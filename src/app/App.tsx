@@ -20,6 +20,7 @@ export function App() {
           <Routes location={location}>
             <Route path="/" element={<Navigate to="/workspaces" replace />} />
             <Route path="/workspaces" element={<WorkspacePage />} />
+            <Route path="/workspaces/:workspaceId" element={<WorkspacePage />} />
             <Route path="/prompts" element={<PromptPage />} />
             <Route path="/progress" element={<ProgressPage />} />
             <Route path="/stash" element={<StashPage />} />

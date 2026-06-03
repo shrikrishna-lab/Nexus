@@ -1,4 +1,5 @@
 import { Download, Lock, Moon, Palette, Shield, Timer, Upload } from "lucide-react";
+import { toast } from "sonner";
 import { ModuleHeader } from "@/components/ModuleHeader";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -6,7 +7,7 @@ import { themes } from "@/data/seed";
 import { useNexusStore } from "@/stores/useNexusStore";
 
 export function SettingsPage() {
-  const { themeName, setTheme, focusMode, toggleFocus } = useNexusStore();
+  const { themeName, setTheme, focusMode, toggleFocus, lock } = useNexusStore();
 
   return (
     <div>
@@ -16,8 +17,8 @@ export function SettingsPage() {
         description="Onboarding, themes, backup and restore, privacy lock, focus mode, changelog, offline mode, desktop widgets, and lifetime stats."
         actions={
           <>
-            <Button><Upload size={16} /> Restore .nexus</Button>
-            <Button variant="primary"><Download size={16} /> Backup</Button>
+            <Button onClick={() => toast.info("Restore picker requested")}><Upload size={16} /> Restore .nexus</Button>
+            <Button variant="primary" onClick={() => toast.success("Encrypted backup export prepared")}><Download size={16} /> Backup</Button>
           </>
         }
       />
@@ -44,7 +45,10 @@ export function SettingsPage() {
           <h2 className="mb-4 flex items-center gap-2 font-bold"><Shield size={17} /> Privacy Lock</h2>
           <div className="space-y-3">
             <Input placeholder="Set local PIN" type="password" />
-            <Button className="w-full"><Lock size={16} /> Enable biometric/PIN lock</Button>
+            <Button className="w-full" onClick={() => {
+              toast.success("Privacy lock enabled");
+              lock();
+            }}><Lock size={16} /> Enable biometric/PIN lock</Button>
             <Button className="w-full" onClick={toggleFocus}><Moon size={16} /> {focusMode ? "Exit Focus Mode" : "Enter Focus Mode"}</Button>
           </div>
         </section>

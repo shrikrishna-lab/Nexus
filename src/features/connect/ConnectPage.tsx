@@ -1,4 +1,5 @@
 import { Bot, Github, KeyRound, Link2, Play, RefreshCw, Settings, Webhook } from "lucide-react";
+import { toast } from "sonner";
 import { ModuleHeader } from "@/components/ModuleHeader";
 import { Button } from "@/components/ui/Button";
 import { integrations } from "@/data/seed";
@@ -21,7 +22,7 @@ export function ConnectPage() {
         eyebrow="Module 6"
         title="Connect Hub"
         description="Offline-friendly integration dashboard for GitHub, Notion, Calendar, Spotify, Discord, webhooks, API keys, and desktop MCP subprocess launchers."
-        actions={<Button variant="primary"><KeyRound size={16} /> API Key Manager</Button>}
+        actions={<Button variant="primary" onClick={() => toast.info("API Key Manager opened")}><KeyRound size={16} /> API Key Manager</Button>}
       />
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {integrations.map((integration) => {
@@ -36,7 +37,7 @@ export function ConnectPage() {
               <p className="mt-2 text-sm text-white/52">{integration.detail}</p>
               <div className="mt-5 flex items-center justify-between text-xs text-white/42">
                 <span>Refresh: {integration.interval}</span>
-                <Button size="sm"><Settings size={14} /> Configure</Button>
+                <Button size="sm" onClick={() => toast.info(`${integration.service} configuration opened`)}><Settings size={14} /> Configure</Button>
               </div>
             </article>
           );

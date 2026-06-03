@@ -1,6 +1,6 @@
 import { ReactNode, useEffect } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import { Archive, BarChart3, Bot, Boxes, ChevronLeft, Command, Database, Flame, Home, Menu, Moon, Plus, Search, Settings, Shield, Sparkles, Wifi } from "lucide-react";
+import { Archive, BarChart3, Bot, ChevronLeft, Flame, Home, Menu, Plus, Search, Settings, Shield, Sparkles, Wifi } from "lucide-react";
 import { useHotkeys } from "react-hotkeys-hook";
 import { Button } from "@/components/ui/Button";
 import { CommandPalette } from "@/app/CommandPalette";
@@ -8,14 +8,14 @@ import { useNexusStore } from "@/stores/useNexusStore";
 import { cn } from "@/lib/utils";
 
 const nav = [
-  { to: "/workspaces", label: "Workspaces", icon: Home },
-  { to: "/prompts", label: "Prompts", icon: Sparkles },
-  { to: "/progress", label: "Progress", icon: BarChart3 },
-  { to: "/stash", label: "Stash", icon: Archive },
-  { to: "/future", label: "Future", icon: Flame },
-  { to: "/armin", label: "Armin", icon: Bot },
-  { to: "/connect", label: "Connect", icon: Wifi }
-];
+  { id: "workspaces", to: "/workspaces", label: "Workspaces", icon: Home },
+  { id: "prompts", to: "/prompts", label: "Prompts", icon: Sparkles },
+  { id: "progress", to: "/progress", label: "Progress", icon: BarChart3 },
+  { id: "stash", to: "/stash", label: "Stash", icon: Archive },
+  { id: "future", to: "/future", label: "Future", icon: Flame },
+  { id: "armin", to: "/armin", label: "Armin", icon: Bot },
+  { id: "connect", to: "/connect", label: "Connect", icon: Wifi }
+] as const;
 
 export function Layout({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
@@ -29,8 +29,10 @@ export function Layout({ children }: { children: ReactNode }) {
     setCommandOpen,
     arminThinking,
     toggleArmin,
-    focusMode
+    focusMode,
+    enabledModules
   } = useNexusStore();
+  const visibleNav = nav.filter((item) => enabledModules.includes(item.id));
 
   useHotkeys("mod+k", (event) => {
     event.preventDefault();
@@ -44,7 +46,7 @@ export function Layout({ children }: { children: ReactNode }) {
   useHotkeys("mod+1,mod+2,mod+3,mod+4,mod+5,mod+6,mod+7", (event) => {
     event.preventDefault();
     const index = Number(event.key) - 1;
-    navigate(nav[index]?.to || "/workspaces");
+    navigate(visibleNav[index]?.to || "/workspaces");
   });
   useHotkeys("mod+n", (event) => {
     event.preventDefault();
@@ -89,7 +91,7 @@ export function Layout({ children }: { children: ReactNode }) {
             </Button>
           )}
           <nav className="space-y-1">
-            {nav.map((item) => (
+            {visibleNav.map((item) => (
               <NavLink
                 key={item.to}
                 to={item.to}
@@ -117,7 +119,10 @@ export function Layout({ children }: { children: ReactNode }) {
                     key={workspace.id}
                     aria-label={`Switch to ${workspace.name}`}
                     className={cn("focus-ring flex w-full items-center gap-2 rounded-md px-2 py-2 text-left text-sm text-white/62 hover:bg-white/[0.06]", activeWorkspaceId === workspace.id && "bg-white/[0.07] text-white")}
-                    onClick={() => setActiveWorkspace(workspace.id)}
+                    onClick={() => {
+                      setActiveWorkspace(workspace.id);
+                      navigate(`/workspaces/${workspace.id}`);
+                    }}
                   >
                     <span className="h-2.5 w-2.5 rounded-full" style={{ background: workspace.color }} />
                     <span className="truncate">{workspace.name}</span>
@@ -130,7 +135,7 @@ export function Layout({ children }: { children: ReactNode }) {
         </aside>
         <div className="flex min-w-0 flex-1 flex-col">
           <header className="flex h-16 shrink-0 items-center gap-3 border-b border-white/10 bg-black/10 px-4 backdrop-blur-2xl">
-            <Button aria-label="Open navigation" size="icon" variant="ghost" className="md:hidden">
+            <Button aria-label="Open navigation" size="icon" variant="ghost" className="md:hidden" onClick={toggleSidebar}>
               <Menu size={18} />
             </Button>
             <button
@@ -162,7 +167,7 @@ export function Layout({ children }: { children: ReactNode }) {
           </header>
           <main className="min-h-0 flex-1 overflow-y-auto p-4 pb-24 md:p-6">{children}</main>
           <nav className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-5 border-t border-white/10 bg-[#0a0a0f]/94 p-2 backdrop-blur-2xl md:hidden">
-            {nav.slice(0, 5).map((item) => (
+            {visibleNav.slice(0, 5).map((item) => (
               <NavLink key={item.to} to={item.to} className={({ isActive }) => cn("flex flex-col items-center gap-1 rounded-md py-2 text-[11px] text-white/48", isActive && "bg-white/[0.08] text-white")}>
                 <item.icon size={17} />
                 {item.label.split(" ")[0]}
