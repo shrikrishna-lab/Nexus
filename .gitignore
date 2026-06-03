@@ -8,7 +8,9 @@ dist/
 nexus.sqlite
 *.sqlite
 *.db
+scripts/supabase-env.ps1
 src-tauri/target/
 android/
 ios/
 .supabase/
+supabase/.temp/

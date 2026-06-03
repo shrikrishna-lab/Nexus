@@ -6,6 +6,8 @@ type NexusState = {
   prompts: Prompt[];
   stashItems: StashItem[];
   tasks: Task[];
+  authReady: boolean;
+  profileName: string;
   activeWorkspaceId: string;
   sidebarCollapsed: boolean;
   commandOpen: boolean;
@@ -21,13 +23,21 @@ type NexusState = {
   toggleFocus: () => void;
   setTheme: (name: string) => void;
   addWorkspace: (workspace: Workspace) => void;
+  setupLocalAuth: (name: string, pin: string) => boolean;
+  unlock: (pin: string) => boolean;
+  lock: () => void;
 };
+
+const storedProfileName = localStorage.getItem("nexus.profileName") || "";
+const storedPin = localStorage.getItem("nexus.pin") || "";
 
 export const useNexusStore = create<NexusState>((set) => ({
   workspaces,
   prompts,
   stashItems,
   tasks,
+  authReady: !storedPin,
+  profileName: storedProfileName,
   activeWorkspaceId: "study",
   sidebarCollapsed: false,
   commandOpen: false,
@@ -49,5 +59,18 @@ export const useNexusStore = create<NexusState>((set) => ({
     }
     set({ themeName: name });
   },
-  addWorkspace: (workspace) => set((state) => ({ workspaces: [...state.workspaces, workspace] }))
+  addWorkspace: (workspace) => set((state) => ({ workspaces: [...state.workspaces, workspace] })),
+  setupLocalAuth: (name, pin) => {
+    if (pin.trim().length < 4) return false;
+    localStorage.setItem("nexus.profileName", name.trim() || "Nexus User");
+    localStorage.setItem("nexus.pin", pin);
+    set({ profileName: name.trim() || "Nexus User", authReady: true });
+    return true;
+  },
+  unlock: (pin) => {
+    const ok = pin === localStorage.getItem("nexus.pin");
+    if (ok) set({ authReady: true });
+    return ok;
+  },
+  lock: () => set({ authReady: false })
 }));
