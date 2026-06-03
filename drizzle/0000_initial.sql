@@ -1,0 +1,10 @@
+CREATE TABLE workspaces (id text PRIMARY KEY NOT NULL, name text NOT NULL, icon text NOT NULL, color text NOT NULL, description text, created_at integer NOT NULL);
+CREATE TABLE prompts (id text PRIMARY KEY NOT NULL, workspace_id text NOT NULL, title text NOT NULL, body text NOT NULL, tags text NOT NULL, image_url text, use_count integer DEFAULT 0 NOT NULL, favorite integer DEFAULT 0 NOT NULL, created_at integer NOT NULL, updated_at integer NOT NULL);
+CREATE TABLE stash_items (id text PRIMARY KEY NOT NULL, workspace_id text NOT NULL, type text NOT NULL, title text NOT NULL, content text NOT NULL, image_url text, tags text NOT NULL, encrypted integer DEFAULT 0 NOT NULL, created_at integer NOT NULL);
+CREATE TABLE tasks (id text PRIMARY KEY NOT NULL, workspace_id text NOT NULL, title text NOT NULL, due_date text, priority text NOT NULL, status text NOT NULL, recur_rule text, parent_id text);
+CREATE TABLE progress_logs (id text PRIMARY KEY NOT NULL, workspace_id text NOT NULL, category text NOT NULL, hours real NOT NULL, notes text, logged_at integer NOT NULL);
+CREATE TABLE links (id text PRIMARY KEY NOT NULL, workspace_id text NOT NULL, url text NOT NULL, title text NOT NULL, favicon text, screenshot text, tags text NOT NULL);
+CREATE TABLE ideas (id text PRIMARY KEY NOT NULL, workspace_id text NOT NULL, title text NOT NULL, body text NOT NULL, sketch_data text, priority text NOT NULL, status text NOT NULL);
+CREATE TABLE armin_messages (id text PRIMARY KEY NOT NULL, workspace_id text NOT NULL, role text NOT NULL, content text NOT NULL, tool_calls text, created_at integer NOT NULL);
+CREATE TABLE integrations (id text PRIMARY KEY NOT NULL, service text NOT NULL, access_token text, refresh_token text, config text, last_sync_at integer);
+CREATE TABLE settings ("key" text PRIMARY KEY NOT NULL, value text NOT NULL);
