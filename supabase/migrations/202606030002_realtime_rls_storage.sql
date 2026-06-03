@@ -40,9 +40,11 @@ begin
     'settings'
   ]
   loop
-    execute format('alter publication supabase_realtime add table public.%I', table_name);
-  exception
-    when duplicate_object then null;
+    begin
+      execute format('alter publication supabase_realtime add table public.%I', table_name);
+    exception
+      when duplicate_object then null;
+    end;
   end loop;
 end $$;
 
