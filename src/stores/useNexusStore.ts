@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { prompts, stashItems, tasks, themes, workspaces, type Prompt, type StashItem, type Task, type Workspace } from "@/data/seed";
 
-export type ModuleId = "workspaces" | "prompts" | "progress" | "stash" | "future" | "armin" | "connect";
+export type ModuleId = "workspaces" | "prompts" | "commands" | "progress" | "stash" | "future" | "armin" | "connect";
 
 type NexusState = {
   workspaces: Workspace[];
@@ -36,7 +36,7 @@ type NexusState = {
 
 const storedProfileName = localStorage.getItem("nexus.profileName") || "";
 const storedPin = localStorage.getItem("nexus.pin") || "";
-const allModules: ModuleId[] = ["workspaces", "prompts", "progress", "stash", "future", "armin", "connect"];
+const allModules: ModuleId[] = ["workspaces", "prompts", "commands", "progress", "stash", "future", "armin", "connect"];
 
 function readJson<T>(key: string, fallback: T): T {
   try {
@@ -62,7 +62,7 @@ export const useNexusStore = create<NexusState>((set) => ({
   tasks,
   authReady: !storedPin,
   profileName: storedProfileName,
-  enabledModules: readJson("nexus.enabledModules", allModules),
+  enabledModules: Array.from(new Set(["workspaces", ...readJson("nexus.enabledModules", allModules), "commands"])) as ModuleId[],
   activeWorkspaceId: "study",
   sidebarCollapsed: false,
   commandOpen: false,

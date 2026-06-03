@@ -1,6 +1,6 @@
 import { ReactNode, useEffect } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import { Archive, BarChart3, Bot, ChevronLeft, Flame, Home, Menu, Plus, Search, Settings, Shield, Sparkles, Wifi } from "lucide-react";
+import { Archive, BarChart3, Bot, ChevronLeft, Flame, Home, Menu, Plus, Search, Settings, Sparkles, Terminal, Wifi } from "lucide-react";
 import { useHotkeys } from "react-hotkeys-hook";
 import { Button } from "@/components/ui/Button";
 import { CommandPalette } from "@/app/CommandPalette";
@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 const nav = [
   { id: "workspaces", to: "/workspaces", label: "Workspaces", icon: Home },
   { id: "prompts", to: "/prompts", label: "Prompts", icon: Sparkles },
+  { id: "commands", to: "/commands", label: "Commands", icon: Terminal },
   { id: "progress", to: "/progress", label: "Progress", icon: BarChart3 },
   { id: "stash", to: "/stash", label: "Stash", icon: Archive },
   { id: "future", to: "/future", label: "Future", icon: Flame },
@@ -43,7 +44,7 @@ export function Layout({ children }: { children: ReactNode }) {
     toggleArmin();
     navigate("/armin");
   });
-  useHotkeys("mod+1,mod+2,mod+3,mod+4,mod+5,mod+6,mod+7", (event) => {
+  useHotkeys("mod+1,mod+2,mod+3,mod+4,mod+5,mod+6,mod+7,mod+8", (event) => {
     event.preventDefault();
     const index = Number(event.key) - 1;
     navigate(visibleNav[index]?.to || "/workspaces");
@@ -126,7 +127,7 @@ export function Layout({ children }: { children: ReactNode }) {
                   >
                     <span className="h-2.5 w-2.5 rounded-full" style={{ background: workspace.color }} />
                     <span className="truncate">{workspace.name}</span>
-                    {workspace.pinned && <Shield className="ml-auto text-white/35" size={13} />}
+                    {workspace.pinned && <span className="ml-auto text-white/35">◆</span>}
                   </button>
                 ))}
               </div>

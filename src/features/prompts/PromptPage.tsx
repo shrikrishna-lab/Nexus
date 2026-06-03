@@ -1,11 +1,8 @@
 import { useMemo, useState } from "react";
-import CodeMirror from "@uiw/react-codemirror";
-import { markdown } from "@codemirror/lang-markdown";
-import { oneDark } from "@codemirror/theme-one-dark";
 import { ChevronDown, Copy, Download, ImagePlus, Lock, Search, Sparkles, Upload, X } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
+import { Input, Textarea } from "@/components/ui/Input";
 import { extractVariables, substituteVariables } from "@/lib/utils";
 import { useNexusStore } from "@/stores/useNexusStore";
 
@@ -185,7 +182,7 @@ export function PromptPage() {
       </section>
 
       {selected && (
-        <aside className="fixed bottom-5 right-5 z-50 hidden w-[430px] max-w-[calc(100vw-2rem)] overflow-hidden rounded-[26px] border border-white/12 bg-[#1d1d1d]/95 shadow-2xl backdrop-blur-2xl xl:block">
+        <aside className="fixed bottom-5 right-5 z-50 hidden w-[390px] max-w-[calc(100vw-2rem)] overflow-hidden rounded-[30px] border border-white/12 bg-[#1d1d1d]/95 shadow-2xl backdrop-blur-2xl xl:block">
           <div className="flex items-start justify-between border-b border-white/10 p-5">
             <div>
               <p className="text-xs font-black uppercase tracking-[0.18em] text-cyan-200/70">Selected Prompt</p>
@@ -196,8 +193,11 @@ export function PromptPage() {
               <X size={18} />
             </Button>
           </div>
-          <div className="max-h-[66vh] overflow-y-auto p-5">
-            <CodeMirror value={selected.body} height="190px" theme={oneDark} extensions={[markdown()]} basicSetup={{ lineNumbers: false }} />
+          <div className="max-h-[62vh] overflow-y-auto p-5">
+            <div className="rounded-3xl border border-white/10 bg-white/[0.045] p-4">
+              <div className="mb-2 text-xs font-black uppercase tracking-[0.16em] text-white/35">Prompt Text</div>
+              <Textarea className="min-h-40 border-0 bg-transparent p-0 text-[15px] leading-7 text-white/78 placeholder:text-white/35" value={selected.body} readOnly />
+            </div>
             <div className="mt-4 space-y-3">
               {variables.map((variable) => (
                 <Input key={variable} placeholder={`Value for {{${variable}}}`} value={values[variable] || ""} onChange={(event) => setValues({ ...values, [variable]: event.target.value })} />

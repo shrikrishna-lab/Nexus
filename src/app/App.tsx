@@ -2,6 +2,7 @@ import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { Layout } from "@/app/Layout";
 import { AuthGate } from "@/features/auth/AuthGate";
 import { ArminPage } from "@/features/armin/ArminPage";
+import { CommandCenterPage } from "@/features/commands/CommandCenterPage";
 import { ConnectPage } from "@/features/connect/ConnectPage";
 import { FuturePage } from "@/features/future/FuturePage";
 import { ProgressPage } from "@/features/progress/ProgressPage";
@@ -22,6 +23,7 @@ export function App() {
             <Route path="/workspaces" element={<WorkspacePage />} />
             <Route path="/workspaces/:workspaceId" element={<WorkspacePage />} />
             <Route path="/prompts" element={<PromptPage />} />
+            <Route path="/commands" element={<CommandCenterPage />} />
             <Route path="/progress" element={<ProgressPage />} />
             <Route path="/stash" element={<StashPage />} />
             <Route path="/future" element={<FuturePage />} />

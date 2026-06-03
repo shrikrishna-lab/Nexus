@@ -9,6 +9,7 @@ import { type Workspace, workspaces as seedWorkspaces } from "@/data/seed";
 const moduleOptions: { id: ModuleId; label: string; body: string }[] = [
   { id: "workspaces", label: "Workspaces", body: "Your main private rooms" },
   { id: "prompts", label: "Prompt Department", body: "Copy, edit, and version prompts" },
+  { id: "commands", label: "Command UI", body: "Slash commands with copy buttons" },
   { id: "progress", label: "Progress", body: "Study, projects, habits, timers" },
   { id: "stash", label: "Stash", body: "Snippets, media, commands, vault" },
   { id: "future", label: "Future Board", body: "Ideas, links, tasks, MCP configs" },
